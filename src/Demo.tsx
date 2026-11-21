@@ -1,4 +1,5 @@
-import { animate, useMotionValue, useMotionValueEvent, useReducedMotion, useTransform, motion } from 'motion/react'
+import { animate, useMotionValue, useMotionValueEvent, useReducedMotion, useTransform } from 'motion/react'
+import * as m from 'motion/react-m'
 import type { AnimationPlaybackControls } from 'motion/react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { MAX, MIN, TEMPOS, angleDelta, clock, project, resist, snap, tempoFor } from './dial.ts'
@@ -23,6 +24,7 @@ export function Demo() {
   const root = useRef<HTMLDivElement>(null)
   const dial = useRef<HTMLDivElement>(null)
   const spring = useRef<AnimationPlaybackControls | null>(null)
+  const started = useRef(false) // a session is under way (running or paused): the dial may go below the 5 minute floor
   const busy = useRef(false) // true while the finger or a spring owns the value
   const drag = useRef({ raw: 0, last: 0, detent: 0, hist: [] as { t: number; v: number }[] })
   const st = useRef({ running, phase, beats, len, fast })
@@ -70,6 +72,7 @@ export function Demo() {
     } else {
       setPhase('focus')
       setRunning(false)
+      started.current = false
       if (b >= 4) setBeats(0)
       flyTo(l)
     }
@@ -104,6 +107,7 @@ export function Demo() {
     spring.current?.stop()
     busy.current = false
     if (mv.get() <= 0.01) mv.set(st.current.len)
+    started.current = true
     setRunning(true)
   }, [mv])
 
@@ -117,12 +121,14 @@ export function Demo() {
   }, [reduced, start])
 
   const pick = (m: number) => {
+    started.current = false
     setRunning(false)
     setPhase('focus')
     setLen(m)
     flyTo(m)
   }
   const reset = () => {
+    started.current = false
     setRunning(false)
     setPhase('focus')
     setBeats(0)
@@ -134,7 +140,7 @@ export function Demo() {
     const r = dial.current!.getBoundingClientRect()
     return (Math.atan2(e.clientX - (r.left + r.width / 2), -(e.clientY - (r.top + r.height / 2))) * 180) / Math.PI
   }
-  const bounds = () => (st.current.running || st.current.phase === 'rest' ? ([0, MAX] as const) : ([MIN, MAX] as const))
+  const bounds = () => (started.current || st.current.phase === 'rest' ? ([0, MAX] as const) : ([MIN, MAX] as const))
 
   const onDown = (e: React.PointerEvent) => {
     if (e.button !== 0) return
@@ -173,7 +179,7 @@ export function Demo() {
     const vel = span > 0.016 ? (b.v - a.v) / span : 0
     const [lo, hi] = bounds()
     const resting = Math.min(hi, Math.max(lo, mv.get() + project(vel)))
-    const idle = !st.current.running && st.current.phase === 'focus'
+    const idle = !started.current && st.current.phase === 'focus'
     const target = idle ? snap(resting) : snap(resting, 1, lo === 0 ? 1 : lo, hi)
     flyTo(target, vel, () => idle && setLen(target))
     if (idle && reduced) setLen(target)
@@ -181,7 +187,7 @@ export function Demo() {
 
   const onKey = (e: React.KeyboardEvent) => {
     const [lo, hi] = bounds()
-    const step = running ? 1 : 5
+    const step = started.current ? 1 : 5
     const keys: Record<string, number> = {
       ArrowRight: step, ArrowUp: step, ArrowLeft: -step, ArrowDown: -step, PageUp: 5, PageDown: -5,
     }
@@ -191,7 +197,7 @@ export function Demo() {
     else if (e.key === 'End') to = hi
     if (to === undefined) return
     e.preventDefault()
-    const idle = !running && phase === 'focus'
+    const idle = !started.current && phase === 'focus'
     flyTo(to, 0, () => idle && setLen(to!))
     if (idle) setLen(to)
   }
@@ -248,11 +254,11 @@ export function Demo() {
               ))}
             </g>
             <circle className="track" cx="180" cy="180" r="138" />
-            <motion.circle className="arc" cx="180" cy="180" r="138" transform="rotate(-90 180 180)" style={{ pathLength: arc }} />
+            <m.circle className="arc" cx="180" cy="180" r="138" transform="rotate(-90 180 180)" style={{ pathLength: arc }} />
           </svg>
-          <motion.div className="hand" style={{ rotate: angle }} aria-hidden="true">
+          <m.div className="hand" style={{ rotate: angle }} aria-hidden="true">
             <span className="knob" />
-          </motion.div>
+          </m.div>
           <div className="readout" aria-hidden="true">
             <output className="digits">{clock(secs)}</output>
           </div>

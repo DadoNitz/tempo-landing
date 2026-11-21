@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { CSSProperties } from 'react'
+import { LazyMotion, domAnimation } from 'motion/react'
 import { Demo, START_EVENT } from './Demo.tsx'
 import { FocusFilter, Measure, MiniDial, SyncPair, TempoList, Week } from './Fragments.tsx'
 import { TEMPOS } from './dial.ts'
@@ -88,7 +89,9 @@ export default function App() {
   return (
     <>
       <a className="skip" href="#main">Skip to content</a>
-      <Hero />
+      <LazyMotion features={domAnimation}>
+        <Hero />
+      </LazyMotion>
       <main id="main">
         <Features />
         <Band />
