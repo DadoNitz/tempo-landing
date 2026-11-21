@@ -16,7 +16,7 @@ export function MiniDial({ minutes, label, sub }: { minutes: number; label: stri
           strokeDasharray={`${(minutes / 60) * c} ${c}`}
         />
         <g transform={`rotate(${minutes * 6} 180 180)`}>
-          <circle className="knob" cx="180" cy="42" r="15" />
+          <circle className="mini-knob" cx="180" cy="42" r="15" />
         </g>
       </svg>
       <div className="mini-text">

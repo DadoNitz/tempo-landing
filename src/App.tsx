@@ -56,7 +56,7 @@ const FEATURES = [
 
 const MEANING = [
   ['Largo', 'Slow and broad', 'Deep work: writing, design, the hard problem.'],
-  ['Andante', 'At a walking pace', 'The classic 25 minutes, with a better name.'],
+  ['Andante', 'At a walking pace', 'The classic pomodoro length, with a better name.'],
   ['Allegro', 'Quick and lively', 'Email, review, the small jobs that pile up.'],
   ['Presto', 'Very fast', 'One task you have been putting off. Five minutes, go.'],
 ]
