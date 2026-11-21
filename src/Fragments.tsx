@@ -3,7 +3,7 @@ import CountUp from './react-bits/CountUp.tsx'
 
 // Small, exact pieces of the Tempo interface. Each root carries data-ui: it is product UI, not page decoration.
 
-export function MiniDial({ minutes, label, sub }: { minutes: number; label: string; sub: string }) {
+export function MiniDial({ minutes, label, sub, textKey }: { minutes: number; label: string; sub: string; textKey?: number }) {
   const r = 138
   const c = 2 * Math.PI * r
   return (
@@ -20,7 +20,7 @@ export function MiniDial({ minutes, label, sub }: { minutes: number; label: stri
           <circle className="mini-knob" cx="180" cy="42" r="15" />
         </g>
       </svg>
-      <div className="mini-text">
+      <div className="mini-text" key={textKey}>
         <p className="mini-label">{label}</p>
         <p className="mini-digits">{clock(minutes * 60)}</p>
         <p className="mini-sub">{sub}</p>

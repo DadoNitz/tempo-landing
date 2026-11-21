@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import type { CSSProperties } from 'react'
-import { LazyMotion, domAnimation } from 'motion/react'
+import { LazyMotion, animate, domAnimation, useMotionValue, useMotionValueEvent, useReducedMotion } from 'motion/react'
 import { Demo, START_EVENT } from './Demo.tsx'
 import { FocusFilter, Measure, MiniDial, SyncPair, TempoList, Week } from './Fragments.tsx'
 import { TEMPOS } from './dial.ts'
+import { has, img } from './img.ts'
 import BlurText from './react-bits/BlurText.tsx'
 import ClickSpark from './react-bits/ClickSpark.tsx'
 import CountUp from './react-bits/CountUp.tsx'
@@ -98,6 +99,7 @@ export default function App() {
   return (
     <ClickSpark sparkColor="#ee4a5f" sparkCount={8} sparkSize={12} sparkRadius={26} duration={520} style={{ height: 'auto' }}>
       <a className="skip" href="#main">Skip to content</a>
+      <Nav />
       <LazyMotion features={domAnimation}>
         <Hero />
       </LazyMotion>
@@ -106,6 +108,7 @@ export default function App() {
         <Band />
         <Names />
         <Story />
+        <Rest />
         <Pricing />
         <Faq />
       </main>
@@ -115,9 +118,17 @@ export default function App() {
   )
 }
 
-function Hero() {
+// Navigation is a translucent layer: the page scrolls under it, and the material only arrives once there is something under it.
+function Nav() {
+  const [under, setUnder] = useState(false)
+  useEffect(() => {
+    const on = () => setUnder(scrollY > 8)
+    on()
+    addEventListener('scroll', on, { passive: true })
+    return () => removeEventListener('scroll', on)
+  }, [])
   return (
-    <header className="hero" id="top">
+    <header className={under ? 'top under' : 'top'}>
       <nav className="nav" aria-label="Main">
         <a className="wordmark" href="#top">Tempo</a>
         <ul>
@@ -127,7 +138,13 @@ function Hero() {
         </ul>
         <Magnet magnetStrength={4} maxOffset={10}><a className="btn" href="#begin">Download</a></Magnet>
       </nav>
+    </header>
+  )
+}
 
+function Hero() {
+  return (
+    <section className="hero" id="top" aria-label="Tempo">
       <div className="hero-body">
         <div className="monument monument-v" aria-hidden="true"><span>Tempo</span></div>
         <div className="hero-copy">
@@ -148,8 +165,7 @@ function Hero() {
           <Demo />
         </div>
       </div>
-
-    </header>
+    </section>
   )
 }
 
@@ -182,7 +198,7 @@ function Clip() {
     }
   }, [])
   return (
-    <video ref={ref} autoPlay muted loop playsInline preload="metadata" poster="img/metronome-poster.jpg" width="854" height="480"
+    <video ref={ref} autoPlay muted loop playsInline preload="metadata" poster={img('metronome-poster.webp', 'metronome-poster.jpg')} width="854" height="480"
       aria-label="A black mechanical metronome on a wooden table, its pendulum arm swinging in front of a scale that names the tempos from Largo to Presto">
       <source src="img/metronome.webm" type="video/webm" />
     </video>
@@ -190,11 +206,26 @@ function Clip() {
 }
 
 function Band() {
+  const own = has('band.webp')
   return (
     <figure className="band" {...rv(0)}>
-      <img src="img/manuscript.jpg" width="1800" height="721" loading="lazy" decoding="async"
-        alt="A torn strip of handwritten music manuscript, four staves in ink on aged paper, with a line of lyrics beneath the notes" />
-      <figcaption>Handwritten music, on paper that has outlasted its tune. Smithsonian, CC0.</figcaption>
+      <img src={img('band.webp', 'manuscript.jpg')} width="1800" height="721" loading="lazy" decoding="async"
+        alt={own
+          ? 'A dark walnut desk at dusk seen from above: a closed notebook, a fountain pen and a small black metronome, lit by one warm lamp'
+          : 'A torn strip of handwritten music manuscript, four staves in ink on aged paper, with a line of lyrics beneath the notes'} />
+      <figcaption>{own ? 'The desk at the end of a long measure.' : 'Handwritten music, on paper that has outlasted its tune. Smithsonian, CC0.'}</figcaption>
+    </figure>
+  )
+}
+
+// Only on the page once public/img/rest.webp exists (docs/image-briefs.md); there is no older picture to stand in.
+function Rest() {
+  if (!has('rest.webp')) return null
+  return (
+    <figure className="pause" {...rv(0)}>
+      <img src="img/rest.webp" width="1600" height="1000" loading="lazy" decoding="async"
+        alt="A person standing at a tall window in soft morning light, holding a cup of tea, a laptop left open on the desk behind them" />
+      <figcaption>The rest starts on its own. Stand up; the timer has it.</figcaption>
     </figure>
   )
 }
@@ -224,6 +255,21 @@ function Names() {
   )
 }
 
+// The pinned dial moves to each step's value with a critically damped spring. Retargeting mid-flight
+// starts from the value on screen and keeps its velocity, so scrolling back and forth never jumps.
+function useSpringValue(target: number) {
+  const reduced = useReducedMotion()
+  const mv = useMotionValue(target)
+  const [v, setV] = useState(target)
+  useMotionValueEvent(mv, 'change', setV)
+  useEffect(() => {
+    if (reduced) return mv.set(target)
+    const a = animate(mv, target, { type: 'spring', bounce: 0, duration: 0.6 })
+    return () => a.stop()
+  }, [mv, target, reduced])
+  return v
+}
+
 function Story() {
   const [active, setActive] = useState(0)
   const refs = useRef<(HTMLLIElement | null)[]>([])
@@ -236,12 +282,13 @@ function Story() {
     return () => io.disconnect()
   }, [])
   const d = STEPS[active].dial
+  const minutes = useSpringValue(d.m)
   return (
     <section className="story" aria-labelledby="story-h">
       <div className="story-stage">
         <H2 id="story-h" text="How a session goes" />
-        <div className="story-dial" key={active}>
-          <MiniDial minutes={d.m} label={d.label} sub={d.sub} />
+        <div className="story-dial">
+          <MiniDial minutes={minutes} label={d.label} sub={d.sub} textKey={active} />
         </div>
       </div>
       <ol className="story-steps">
@@ -337,8 +384,8 @@ function Footer() {
       <div className="foot-credits">
         <p>Tempo is a fictional product, a front-end portfolio project. Prices and features are made up.</p>
         <p>
-          Media: metronome video by Daniel Eriksson (<a href="https://commons.wikimedia.org/wiki/File:Metronome.webm">CC BY 4.0</a>);
-          music manuscript, Smithsonian (<a href="https://n2t.net/ark:/65665/ng49ca746aa-a940-704b-e053-15f76fa0b4fa">CC0</a>).
+          Media: metronome video by Daniel Eriksson (<a href="https://commons.wikimedia.org/wiki/File:Metronome.webm">CC BY 4.0</a>)
+          {!has('band.webp') && <>; music manuscript, Smithsonian (<a href="https://n2t.net/ark:/65665/ng49ca746aa-a940-704b-e053-15f76fa0b4fa">CC0</a>)</>}.
         </p>
       </div>
       <div className="monument monument-foot" aria-hidden="true"><span>Tempo</span></div>
