@@ -117,6 +117,7 @@ function Hero() {
       </nav>
 
       <div className="hero-body">
+        <div className="monument monument-v" aria-hidden="true"><span>Tempo</span></div>
         <div className="hero-copy">
           <h1 {...rv(0)}>Focus, set to a tempo.</h1>
           <p className="lead" {...rv(1)}>
@@ -134,7 +135,6 @@ function Hero() {
         </div>
       </div>
 
-      <div className="monument" aria-hidden="true"><span>Tempo</span></div>
     </header>
   )
 }
@@ -158,10 +158,27 @@ function Features() {
   )
 }
 
+function Clip() {
+  const ref = useRef<HTMLVideoElement>(null)
+  useEffect(() => {
+    const v = ref.current
+    if (v && matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      v.removeAttribute('autoplay')
+      v.pause() // the poster frame stands in for the loop
+    }
+  }, [])
+  return (
+    <video ref={ref} autoPlay muted loop playsInline preload="metadata" poster="img/metronome-poster.jpg" width="854" height="480"
+      aria-label="A black mechanical metronome on a wooden table, its pendulum arm swinging in front of a scale that names the tempos from Largo to Presto">
+      <source src="img/metronome.webm" type="video/webm" />
+    </video>
+  )
+}
+
 function Band() {
   return (
     <figure className="band" {...rv(0)}>
-      <img src="img/manuscript.jpg" width="1600" height="734" loading="lazy" decoding="async"
+      <img src="img/manuscript.jpg" width="1800" height="721" loading="lazy" decoding="async"
         alt="A torn strip of handwritten music manuscript, four staves in ink on aged paper, with a line of lyrics beneath the notes" />
       <figcaption>Handwritten music, on paper that has outlasted its tune. Smithsonian, CC0.</figcaption>
     </figure>
@@ -172,9 +189,8 @@ function Names() {
   return (
     <section className="names" aria-labelledby="names-h">
       <figure className="names-photo" {...rv(0)}>
-        <img src="img/metronome.jpg" width="1100" height="1530" loading="lazy" decoding="async"
-          alt="A wooden pendulum metronome standing on a table, its weighted arm set between two scales of beats per minute" />
-        <figcaption>A pendulum metronome. Photograph: AndonicO, CC BY 2.5.</figcaption>
+        <Clip />
+        <figcaption>A mechanical metronome ticking at 96 beats per minute. Its scale already names the tempos. Video: Daniel Eriksson, CC BY 4.0.</figcaption>
       </figure>
       <div className="names-body">
         <h2 id="names-h" {...rv(0)}>Four words instead of a number.</h2>
@@ -184,8 +200,8 @@ function Names() {
         <dl className="names-list">
           {MEANING.map(([n, f, use], i) => (
             <div key={n} {...rv(i + 2)}>
-              <dt>{n}<span>{TEMPOS[i].min} min</span></dt>
-              <dd><b>{f}.</b> {use}</dd>
+              <dt>{n}</dt>
+              <dd><b>{TEMPOS[i].min} min. {f}.</b> {use}</dd>
             </div>
           ))}
         </dl>
@@ -307,7 +323,7 @@ function Footer() {
       <div className="foot-credits">
         <p>Tempo is a fictional product, a front-end portfolio project. Prices and features are made up.</p>
         <p>
-          Photographs: metronome by AndonicO (<a href="https://commons.wikimedia.org/w/index.php?curid=2055121">CC BY 2.5</a>);
+          Media: metronome video by Daniel Eriksson (<a href="https://commons.wikimedia.org/wiki/File:Metronome.webm">CC BY 4.0</a>);
           music manuscript, Smithsonian (<a href="https://n2t.net/ark:/65665/ng49ca746aa-a940-704b-e053-15f76fa0b4fa">CC0</a>).
         </p>
       </div>
