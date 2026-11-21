@@ -23,10 +23,15 @@ React 19, TypeScript, Vite. [`motion`](https://motion.dev) for springs only (no 
 - Direction dealt by the tasteskill design skill (*The name as a monument*, black and crimson, Imbue / Albert Sans), checked in a real browser with its inspector at 1440, 768 and 390 px: 0 failures. One redraw: the stock hero (name split to corners) cannot hold a live demo, so the name stands vertically beside it.
 - **Apple-style motion** (from the *Designing Fluid Interfaces* talk): response on pointer-down, 1:1 direct manipulation, momentum projection (`v · 0.998 / (1 − 0.998)`), velocity hand-off into a critically damped spring, bounce only when a flick carried momentum, rubber-banding at the ends, interruptible everything.
 - The countdown runs on timestamps, not ticks, so it stays correct after a background tab or a slow frame.
-- Press feedback on every control, a pinned story that swaps the dial state as you scroll, scroll-linked drift on the pictures, staggered entrances that never hide content if scripts fail.
+- Press feedback on every control and link (on pointer-down), a pinned story whose dial springs to each step from the value on screen (scroll back mid-flight and it reverses without a jump), scroll-linked drift on the pictures, staggered entrances that never hide content if scripts fail.
+- **Layout and materials (apple-design pass):** the nav is a translucent layer the page scrolls under; its blur and tint arrive together once there is content beneath, and it fades out at the bottom edge instead of drawing a divider. One rem-based spacing scale (gutter, heading-to-content, section gap) so a larger text setting grows the layout with it. Tracking is size-specific: tight on display type, slightly open on captions. Raised surfaces carry a light top edge and a soft deep shadow; `prefers-reduced-transparency` and `prefers-contrast` turn the nav solid.
 - `prefers-reduced-motion`: springs become jumps, entrances become fades, the video loop stops on its poster frame. Contrast, focus rings and `prefers-contrast` are handled.
 
-Measured with Lighthouse on the production build (desktop): Performance 98, Accessibility 100, Best Practices 100, SEO 100.
+Measured with Lighthouse on the production build: desktop Performance 100, Accessibility 100, Best Practices 100, SEO 100; mobile Performance 97 (LCP 2.6 s, CLS 0), the rest 100.
+
+## Pictures
+
+[`docs/image-briefs.md`](docs/image-briefs.md) describes three photographs (prompts, ratios, target paths). Drop `band.webp`, `metronome-poster.webp` or `rest.webp` into `public/img` and rebuild: the build lists that folder, and each slot falls back to the current picture (or stays out of the page) until its file exists.
 
 ## React Bits
 
