@@ -4,6 +4,15 @@ import { LazyMotion, domAnimation } from 'motion/react'
 import { Demo, START_EVENT } from './Demo.tsx'
 import { FocusFilter, Measure, MiniDial, SyncPair, TempoList, Week } from './Fragments.tsx'
 import { TEMPOS } from './dial.ts'
+import BlurText from './react-bits/BlurText.tsx'
+import ClickSpark from './react-bits/ClickSpark.tsx'
+import CountUp from './react-bits/CountUp.tsx'
+import Magnet from './react-bits/Magnet.tsx'
+import ShinyText from './react-bits/ShinyText.tsx'
+import SpotlightCard from './react-bits/SpotlightCard.tsx'
+
+// Section headings: words resolve out of a blur as they scroll into view.
+const H2 = ({ id, text }: { id: string; text: string }) => <BlurText as="h2" id={id} text={text} animateBy="words" delay={90} />
 
 // Entrance props: heading, then text, then picture, staggered by --i.
 const rv = (i = 0) => ({ 'data-rv': '', style: { '--i': i } as CSSProperties })
@@ -87,7 +96,7 @@ const FAQ = [
 export default function App() {
   useReveal()
   return (
-    <>
+    <ClickSpark sparkColor="#ee4a5f" sparkCount={8} sparkSize={12} sparkRadius={26} duration={520} style={{ height: 'auto' }}>
       <a className="skip" href="#main">Skip to content</a>
       <LazyMotion features={domAnimation}>
         <Hero />
@@ -102,7 +111,7 @@ export default function App() {
       </main>
       <Begin />
       <Footer />
-    </>
+    </ClickSpark>
   )
 }
 
@@ -116,7 +125,7 @@ function Hero() {
           <li><a href="#pricing">Pricing</a></li>
           <li><a href="#faq">FAQ</a></li>
         </ul>
-        <a className="btn" href="#begin">Download</a>
+        <Magnet magnetStrength={4} maxOffset={10}><a className="btn" href="#begin">Download</a></Magnet>
       </nav>
 
       <div className="hero-body">
@@ -127,10 +136,12 @@ function Hero() {
             Tempo is a focus timer for Mac and iPhone. Pick a tempo, drag the dial to the time you have, and let the rests keep the beat.
           </p>
           <div className="actions" {...rv(2)}>
-            <button type="button" className="btn btn-big" onClick={() => window.dispatchEvent(new Event(START_EVENT))}>
-              Start a session
-            </button>
-            <a className="link" href="#begin">Download Tempo<span aria-hidden="true"> →</span></a>
+            <Magnet magnetStrength={4} maxOffset={14}>
+              <button type="button" className="btn btn-big" onClick={() => window.dispatchEvent(new Event(START_EVENT))}>
+                Start a session
+              </button>
+            </Magnet>
+            <a className="link" href="#begin"><ShinyText text="Download Tempo" color="#efefef" shineColor="#ee4a5f" speed={2.4} delay={1.5} /><span aria-hidden="true"> →</span></a>
           </div>
         </div>
         <div className="hero-demo" {...rv(1)}>
@@ -145,11 +156,11 @@ function Hero() {
 function Features() {
   return (
     <section className="features" id="features" aria-labelledby="features-h">
-      <h2 id="features-h" {...rv(0)}>What Tempo does</h2>
+      <H2 id="features-h" text="What Tempo does" />
       <ul>
         {FEATURES.map((f) => (
           <li className="feature" key={f.h}>
-            <div className="feature-ui" {...rv(0)}>{f.ui}</div>
+            <SpotlightCard className="feature-ui" spotlightColor="#ee4a5f" intensity={0.35} spotlightSize={320} {...rv(0)}>{f.ui}</SpotlightCard>
             <div className="feature-text">
               <h3 {...rv(1)}>{f.h}</h3>
               {f.p.map((t) => <p key={t} {...rv(2)}>{t}</p>)}
@@ -196,7 +207,7 @@ function Names() {
         <figcaption>A mechanical metronome ticking at 96 beats per minute. Its scale already names the tempos. Video: Daniel Eriksson, CC BY 4.0.</figcaption>
       </figure>
       <div className="names-body">
-        <h2 id="names-h" {...rv(0)}>Four words instead of a number.</h2>
+        <H2 id="names-h" text="Four words instead of a number." />
         <p className="names-lead" {...rv(1)}>
           Musicians have named speed with a word for centuries, and a word is easier to feel than a figure. Tempo borrows the vocabulary for the working day.
         </p>
@@ -228,7 +239,7 @@ function Story() {
   return (
     <section className="story" aria-labelledby="story-h">
       <div className="story-stage">
-        <h2 id="story-h" {...rv(0)}>How a session goes</h2>
+        <H2 id="story-h" text="How a session goes" />
         <div className="story-dial" key={active}>
           <MiniDial minutes={d.m} label={d.label} sub={d.sub} />
         </div>
@@ -250,9 +261,9 @@ function Story() {
 function Stage({ p }: { p: (typeof PLANS)[number] }) {
   return (
     <div className="stage">
-      <p className="stage-price"><span>{p.price}</span><small>{p.per}</small></p>
+      <p className="stage-price"><span><CountUp to={Number(p.price.slice(1))} prefix="$" duration={0.9} /></span><small>{p.per}</small></p>
       <p className="stage-text">{p.text}</p>
-      <a className="btn btn-big" href="#begin">{p.cta}</a>
+      <Magnet magnetStrength={4} maxOffset={12}><a className="btn btn-big" href="#begin">{p.cta}</a></Magnet>
     </div>
   )
 }
@@ -261,7 +272,7 @@ function Pricing() {
   const [sel, setSel] = useState(1)
   return (
     <section className="pricing" id="pricing" aria-labelledby="pricing-h">
-      <h2 id="pricing-h" {...rv(0)}>Pricing</h2>
+      <H2 id="pricing-h" text="Pricing" />
       <div className="pricing-grid">
         <ul className="plans" {...rv(1)}>
           {PLANS.map((p, i) => (
@@ -285,7 +296,7 @@ function Pricing() {
 function Faq() {
   return (
     <section className="faq" id="faq" aria-labelledby="faq-h">
-      <div className="faq-row"><h2 id="faq-h" {...rv(0)}>Questions</h2></div>
+      <div className="faq-row"><H2 id="faq-h" text="Questions" /></div>
       {FAQ.map(([q, a]) => (
         <div className="faq-row" key={q}>
           <h3 {...rv(0)}>{q}</h3>
@@ -314,7 +325,7 @@ function Footer() {
       <div className="foot-top">
         <div>
           <p className="foot-invite">Keep your<br />own tempo.</p>
-          <a className="btn btn-big btn-dark" href="#begin">Download Tempo</a>
+          <Magnet magnetStrength={4} maxOffset={12}><a className="btn btn-big btn-dark" href="#begin">Download Tempo</a></Magnet>
         </div>
         <ul className="foot-links">
           <li><a href="#features">Features</a></li>

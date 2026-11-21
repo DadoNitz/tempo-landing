@@ -152,6 +152,8 @@ h2 { font-size: var(--step-head); line-height: 1.05; letter-spacing: -0.02em; }
 .feature-text { grid-column: 8 / 13; display: flex; flex-direction: column; gap: 14px; }
 .feature h3 { font-size: clamp(1.5rem, 1.2rem + 1vw, 2.125rem); line-height: 1.12; letter-spacing: -0.015em; }
 
+.feature-ui.spotlight-card { padding: 0; border-radius: 16px; }
+.feature-ui .frag { background: transparent; }
 .frag { background: var(--surface); border-radius: 16px; padding: 24px; min-height: 176px; display: flex; flex-direction: column; justify-content: center; gap: 16px; font-size: 1rem; }
 .frag-note { color: var(--muted); font-size: var(--step-small); }
 .frag-chips { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }

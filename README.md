@@ -28,6 +28,21 @@ React 19, TypeScript, Vite. [`motion`](https://motion.dev) for springs only (no 
 
 Measured with Lighthouse on the production build (desktop): Performance 98, Accessibility 100, Best Practices 100, SEO 100.
 
+## React Bits
+
+Copied from [reactbits.dev](https://reactbits.dev) (TS-CSS variants, `src/react-bits/`), MIT + Commons Clause; only `motion` as dependency. One local edit: `BlurText` takes `as`/`id` so it renders a real `<h2>`.
+
+| Component | Where |
+| --- | --- |
+| BlurText | every section heading (words resolve out of a blur on scroll) |
+| CountUp | plan prices (replays on each plan switch), weekly beats total |
+| Magnet | nav, hero, plan and footer CTAs |
+| ClickSpark | crimson sparks on every click, whole page |
+| SpotlightCard | the product fragments in Features (light follows the pointer) |
+| ShinyText | hero "Download Tempo" link |
+
+All of them go static under `prefers-reduced-motion`.
+
 ## Run it
 
 ```bash

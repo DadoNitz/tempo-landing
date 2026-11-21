@@ -1,4 +1,5 @@
 import { TEMPOS, clock } from './dial.ts'
+import CountUp from './react-bits/CountUp.tsx'
 
 // Small, exact pieces of the Tempo interface. Each root carries data-ui: it is product UI, not page decoration.
 
@@ -109,7 +110,7 @@ export function Week() {
           </li>
         ))}
       </ul>
-      <p className="frag-note">{total} beats, {(total * 25) / 60 | 0} h {(total * 25) % 60} min of focus</p>
+      <p className="frag-note"><CountUp to={total} duration={1.2} /> beats, {(total * 25) / 60 | 0} h {(total * 25) % 60} min of focus</p>
     </div>
   )
 }
