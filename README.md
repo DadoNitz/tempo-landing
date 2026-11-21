@@ -20,13 +20,13 @@ React 19, TypeScript, Vite. [`motion`](https://motion.dev) for springs only (no 
 ## Design and motion
 
 - **Idea:** the name *Tempo* is a musical term, so session lengths are named the way a score names speed: Largo 50, Andante 25, Allegro 15, Presto 5. The name itself is the monument, set vertically up the left edge of the first screen.
-- Direction dealt by [tasteskill](https://github.com/) (*The name as a monument*, black and crimson, Imbue / Albert Sans), checked in a real browser with its inspector at 1440, 768 and 390 px: 0 failures. One redraw: the stock hero (name split to corners) cannot hold a live demo, so the name stands vertically beside it.
+- Direction dealt by the tasteskill design skill (*The name as a monument*, black and crimson, Imbue / Albert Sans), checked in a real browser with its inspector at 1440, 768 and 390 px: 0 failures. One redraw: the stock hero (name split to corners) cannot hold a live demo, so the name stands vertically beside it.
 - **Apple-style motion** (from the *Designing Fluid Interfaces* talk): response on pointer-down, 1:1 direct manipulation, momentum projection (`v · 0.998 / (1 − 0.998)`), velocity hand-off into a critically damped spring, bounce only when a flick carried momentum, rubber-banding at the ends, interruptible everything.
 - The countdown runs on timestamps, not ticks, so it stays correct after a background tab or a slow frame.
 - Press feedback on every control, a pinned story that swaps the dial state as you scroll, scroll-linked drift on the pictures, staggered entrances that never hide content if scripts fail.
 - `prefers-reduced-motion`: springs become jumps, entrances become fades, the video loop stops on its poster frame. Contrast, focus rings and `prefers-contrast` are handled.
 
-Measured with Lighthouse on the production build (desktop): Performance 97, Accessibility 100, Best Practices 100, SEO 100 after adding `robots.txt`.
+Measured with Lighthouse on the production build (desktop): Performance 98, Accessibility 100, Best Practices 100, SEO 100.
 
 ## Run it
 
