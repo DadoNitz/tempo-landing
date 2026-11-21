@@ -3,3 +3,4 @@ dist
 .taste-skill
 .nitz
 *.tsbuildinfo
+.playwright-mcp/
